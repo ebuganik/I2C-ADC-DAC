@@ -1,0 +1,1 @@
+here add python scripts for generating sine wave and displaying csv files
