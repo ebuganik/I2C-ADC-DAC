@@ -52,6 +52,17 @@ Nakon testiranja pomoću potenciometra, na ulaz A/D konvertora doveden je i sinu
  <p align="center"> 
 <img src = "https://github.com/ebuganik/I2C-ADC-DAC/assets/116347913/e0c7c5df-c01a-4fef-9925-2df0b5c608fe" width = "400", height = "600">
 
+## Rad sa DAC 10 Click modulom
+# Generisanje trougaonog signala
+# Generisanje pravougaonog signala
+# Generisanje sinusnog signala
+
+## Replika ulaznog signala A/D konvertora na D/A konvertoru
+U slučaju da se adrese ova dva slave uređaja razlikuju, što je moguće postići postavljanjem SMD jumper-a zaduženih za konfigurisanje njihovih I2C adresa u drugačije položaje od trenutnih, postoji mogućnost da se na izlazu D/A konvertora dobije replika signala koji je na ulazu A/D konvertora.
+U tom smislu potrebno je inicirati kombinovanu I2C transkciju koja će prvo konfigurisati A/D konvertor i čitati podatke koje šalje, zatim transakciju koja će nam potvrditi da komuniciramo sa odgovarajućim uređajem čitanjem Device ID-a iz statusnog registra D/A konvertora. Pored toga potrebno je konfigurisati D/A konvertor upisivanjem odgovarajućih podataka u GENERAL_CONFIG i TRIGGER registre kao u prethodnim poglavljima, te dodatna transakcija koja će nam omogućiti upisivanje podataka dobijenih od A/D konvertora u DAC_DATA registar D/A konvertora.
+Podaci koje ćemo dobiti od A/D konvertora potrebno je prilagoditi arhitekturi D/A konvertora, jer se radi o uređajima sa različitim rezolucijama. Pored toga, ovi uređaji imaju i različite referentne napone te je zbog toga neophodno izvršiti manipulaciju sirovih podataka sa A/D konvertora.
+Sirove, 12-bitne podatke A/D konvertora ćemo prilagoditi D/A konvertoru tako što ih prvo podijelimo sa 4 (4096/1024 = 4), zatim ćemo ih pomnožiti sa referentnim naponom A/D konvertora (2.5 V) i podijeliti sa referentnim naponom D/A konvertora (3.3 V). Na ovaj način smo pronašli digitalni ekvivalent datog odmjerka signala. Na kraju, tako dobijene podatke potrebno je pomjeriti za dva bita ulijevo, kako bismo dobili odgovarajuće 12-bitno poravnanje koje D/A konvertor zahtjeva. Detaljnija implementacija ovog postupna dostupna je u fajlu **adc-dac.c**.
+
 
 
 
