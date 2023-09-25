@@ -1,5 +1,5 @@
 # I2C-ADC-DAC
-Projektni zadatak se zasniva na radu sa pločicama ADC 12 Click i DAC 10 Click proizvođača Mikroelektronika. Date pločice je potrebno konfigurisati pomoću I2C protokola, tako da se omogući prikazivanje signala dovedenog na ulaz analogno/digitalnog konvertora na standardnom izlazu, te generisanje osnovnih tipova analognih signala: trougaonog, pravougaonog i sinusnog na izlazu digitalno/analognog konvertora.
+Projektni zadatak se zasniva na radu sa pločicama ADC 12 Click i DAC 10 Click proizvođača Mikroelektronika. Date pločice je potrebno konfigurisati pomoću I2C protokola, tako da se omogući prikazivanje signala dovedenog na ulaz analogno/digitalnog konvertora na standardnom izlazu, te generisanje osnovnih tipova analognog signala: trougaonog, pravougaonog i sinusnog na izlazu digitalno/analognog konvertora.
 ## Konfiguracija Raspberry Pi platforme
 Prije početka rada na projektnom zadatku potrebno je sprovesti niz koraka koji se odnose na konfiguraciju korištene Raspberry Pi platforme, tj. formatiranje SD kartice i preuzimanje i instalacija odgovarajućeg operativnog sistema. Nakon postavljanja korisničnog imena i hostname-a prilikom preuzimanja Raspberry Pi Imager-a, sljedeći korak jeste povezivanje sa Raspberry Pi platformom putem sljedeće komande:
 
@@ -23,5 +23,31 @@ Prije testiranja razvijenog programa potrebno je povezati ADC 12 Click modul sa 
 | GPIO 3 (I2C1 SCL) | SCL |
 | Ground | GND |
 
-Prvi vid testiranja ovog A/D konvertora je sproveden dovođenjem napona sa potenciometra na njegov ulaz (CH0). Rezultati testiranja prikazani su na slikama ispod:
+Prvi vid testiranja ovog A/D konvertora je sproveden dovođenjem napona sa potenciometra na njegov ulaz (CH0). Rezultati testiranja prikazani su na slikama ispod, prilikom čega je upoređena vrijednost napona izmjerenog multimetrom i vrijednosti dobijene od A/D konvertora.
+
+<p align="center">
+<img src = "https://github.com/ebuganik/I2C-ADC-DAC/assets/116347913/07b5f59c-3045-4789-a12f-1ac2276130f9" width = "400", height = "600">
+
+<p align="center">
+<img src = "https://github.com/ebuganik/I2C-ADC-DAC/assets/116347913/6673f06d-424b-4a57-be63-f8813d24d06a" width = "400", height = "600">
+
+<p align="center">
+<img src = "https://github.com/ebuganik/I2C-ADC-DAC/assets/116347913/cef6ea10-9ec2-4fb6-aa84-fd6ae4da1154" width = "400", height = "600">
+
+<p align="center">
+<img src = "https://github.com/ebuganik/I2C-ADC-DAC/assets/116347913/c5f6fd85-725e-4e2d-9ea1-857a02d9d572" width = "400", height = "600">
+
+Sirove podatke sa A/D konvertora potrebno je interpretirati kao stvarne, digitalne vrijednosti, koje su određene internom referencom i rezolucijom ovog uređaja. Kako je interna naponska referenca manja od napona napajanja, maksimalni napon koji je moguće prikazati biće 2.51 V. Sve vrijednosti napona na ulazu koje su veće ili jednake od interne reference, biće prikazane kao vrijednost od 2.51 V.
+
+ <p align="center"> 
+<img src = "https://github.com/ebuganik/I2C-ADC-DAC/assets/116347913/14289d76-d2cb-413d-b04a-49a9ff1c0773" width = "400", height = "600">
+   
+Nakon testiranja pomoću potenciometra, na ulaz A/D konvertora doveden je i sinusni signal amplitude 1.65 V, ofseta 1.65V i frekvencije 1 kHz. Rezultat testiranja prikazan je na slici ispod:
+
+ <p align="center"> 
+<img src = "https://github.com/ebuganik/I2C-ADC-DAC/assets/116347913/e0c7c5df-c01a-4fef-9925-2df0b5c608fe" width = "400", height = "600">
+
+
+
+
 
