@@ -22,10 +22,11 @@ Prije testiranja razvijenog programa potrebno je povezati ADC 12 Click modul sa 
 
 | Raspberry Pi Pin | ADC 12 Click pin |
 | :------: | :------: | 
-| Power 3.3 V | 3.3 V |
-| GPIO 2 (I2C1 SDA) | SDA |
-| GPIO 3 (I2C1 SCL) | SCL |
+| Power 3.3 V | 3.3 V | 
+| GPIO 2 (I2C1 SDA) | SDA | 
+| GPIO 3 (I2C1 SCL) | SCL | 
 | Ground | GND |
+
 
 Prvi vid testiranja ovog A/D konvertora je sproveden dovođenjem napona sa potenciometra na njegov ulaz (CH0). Rezultati testiranja prikazani su na slikama ispod, prilikom čega je upoređena vrijednost napona izmjerenog multimetrom i vrijednosti dobijene od A/D konvertora.
 
