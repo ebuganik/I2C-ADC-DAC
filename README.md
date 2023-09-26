@@ -53,9 +53,23 @@ Nakon testiranja pomoću potenciometra, na ulaz A/D konvertora doveden je i sinu
 <img src = "https://github.com/ebuganik/I2C-ADC-DAC/assets/116347913/e0c7c5df-c01a-4fef-9925-2df0b5c608fe" width = "400", height = "600">
 
 ## Rad sa DAC 10 Click modulom
+### Konfiguracija DAC53401 uređaja
+
+DAC 10 Click za svoju osnovu koristi DAC53401, 10-bitni digitalno-analogni konvertor Texas Instruments. S obzirom na to da posjeduje mogućnost rada sa I2C interfejsom, ponajprije je potrebno odrediti adresu ovog slave uređaja kako bi se mogao ispravno konfigurisati. DAC53401 raspolaže sa general i broadcast adresom, u slučaju da se koristi više DAC53401 u komunikaciji. U ovom slučaju potrebna nam je samo general adresa, koja je kao i kod A/D konvertora sedmobitna i određena je preset bitima (fabrički, unaprijed definisanim) 1001 koji predstavljaju više bite te sa tri niža koja zavise od položaja pina A0. Kako je položaj pina A0 na DAC10 Click prema AGND, preostala tri bita su određena sa 000, pa tako adresni bajt iznosi **0x48**.
+
+Konfigurisanje DAC podrazumijeva upisivanje odgovarajućih vrijednosti u nekoliko NVM ili non-volatile registara ovog konvertora. Na primjer, moguće je obezbijediti rad sa internom referencom koja iznosi 1.21 V ili pak eksternom referencom koja zavisi od dovedenog napona napajanja (3 V ili 5.5 V). U radu koji je prikazan u nastavku koristi se napon napajanja od 3.3 V, sa omogućenom eksternom referencom, koja prema tome iznosi 3.3 V i ona se može podesiti upravo korištenjem GENERAL CONFIG registra. U nekim slučajevima potrebno je podesiti i opsege signala koji se prikazuje na izlazu i to upisom u DAC_MARGIN_LOW i _HIGH registre, a ako ipak treba da upisujemo vrijednosti odmjeraka koji će se konvertovani u analogne vrijednosti prikazati na izlazu tada će biti neophodno upisati vrijednosti istih u DAC_DATA registar. Naravno, da bismo omogućili da se sadržaj upiše u pomenute NVM registre, neophodno je setovati NVM_PROG bit u TRIGGER registru. Više detalja o tome kako je u kojem zadatku vršeno konfigurisanje pojašnjeno je u korištenim fajlovima koji se nalaze u folderu ```DAC```.
+
+Potrebno je pomenuti i kako je moguće pročitati i device ID, koji se nalazi u STATUS registru. S obzirom na to da je u pitanju DAC53401-Q1, kako je navedeno i u datasheet-u ovog D/A konvertora, ID iznosi **0x0C**.
+
+# Generisanje talasnih oblika na izlazu DAC konvertora
+
+Za prikaz nekih talasnih oblika na izlazu DAC moguće je iskoristiti i Continuous Waveform Generation Mode ili CWG koji predstavlja jednu od značajnih naprednih funkcionalnosti DAC53401. Tako je moguće odgovarajućim podešavanjem GENERAL_CONFIG registra na izlazu izgenerisati trougaoni, testerasti ili pak pravougaoni oblik signala, sa različitim code step-om i slew rate-om ... (dopuniti)
+
 # Generisanje trougaonog signala
 # Generisanje pravougaonog signala
 # Generisanje sinusnog signala
+
+Za razliku od korištenja pomenutog CWG-a u generisanju nekih talasnih oblika na izlazu DAC, kako bismo izgenerisali sinusni talasni oblik bilo je neophodno primijeniti drugi pristup ... (dopuniti)
 
 ## Replika ulaznog signala A/D konvertora na D/A konvertoru
 U slučaju da se adrese ova dva slave uređaja razlikuju, što je moguće postići postavljanjem SMD jumper-a zaduženih za konfigurisanje njihovih I2C adresa u drugačije položaje od trenutnih, postoji mogućnost da se na izlazu D/A konvertora dobije replika signala koji je na ulazu A/D konvertora.
