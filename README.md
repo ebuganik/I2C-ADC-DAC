@@ -28,7 +28,11 @@ Prije testiranja razvijenog programa potrebno je povezati ADC 12 Click modul sa 
 | Ground | GND |
 
 
-Prvi vid testiranja ovog A/D konvertora je sproveden dovođenjem napona sa potenciometra na njegov ulaz (CH0). Rezultati testiranja prikazani su na slikama ispod, prilikom čega je upoređena vrijednost napona izmjerenog multimetrom sa vrijednostima dobijenih od A/D konvertora.
+Prvi vid testiranja ovog A/D konvertora je sproveden dovođenjem napona sa potenciometra na njegov ulaz (CH0). Rezultati testiranja prikazani su na slikama ispod, prilikom čega je upoređena vrijednost napona izmjerenog multimetrom sa vrijednostima dobijenih od A/D konvertora. Interpretacija sirovih podataka je izvršena korištenjem sljedeće formule:
+
+**$V_{out} = \frac{ADC{data} * V_{ref}}{2^N}$**
+
+gdje $V_{ref}$ predstavlja referentni napon od 2.51 V, a $2^N$ kod 12-bitnog uređaja predstavlja vrijednost od 4096.
 
 <p align="center">
 <img src = "https://github.com/ebuganik/I2C-ADC-DAC/assets/116347913/07b5f59c-3045-4789-a12f-1ac2276130f9" width = "400", height = "600">
