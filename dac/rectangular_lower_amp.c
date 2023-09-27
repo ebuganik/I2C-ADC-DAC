@@ -26,8 +26,8 @@
    and the other two contain two eight bit values determined from the datasheet itself 
    The values themselves can be described with the following: 
             - write_mlow    - value which determines the lower bound of output signal  (0 V)
-			- write_mhigh   - value which determines the higher bound of output signal (3.3 V)
-			- write_gen     - value which enables the configuration of a triangular wave with the code step of 1 LSB and slew rate of 25.6 us,
+			- write_mhigh   - value which determines the higher bound of output signal (1.65 V)
+			- write_gen     - value which enables the configuration of a rectangular wave with the code step of 1 LSB and slew rate of 4 us,
 			                 enables the extern reference from the supplied voltage of 3.3 V and the power up mode
 		    - write_trigger - enables CWG mode (mode where the DAC itself generates the wave on its output) by setting the START_FUNC_GEN bit,
 			                 as well as writing to non-volatile memory by setting NVM_PROG
@@ -39,8 +39,8 @@ int main()
         int fd;
         unsigned char regs[] = {STATUS, DAC_MARGIN_HIGH, DAC_MARGIN_LOW, GENERAL_CONFIG, TRIGGER};
         unsigned char write_mlow[] = {DAC_MARGIN_LOW, 0x00, 0x00};
-        unsigned char write_mhigh[] = {DAC_MARGIN_HIGH, 0x0F, 0xFC};
-        unsigned char write_gen[] = {GENERAL_CONFIG, 0x00, 0x00};  
+        unsigned char write_mhigh[] = {DAC_MARGIN_HIGH, 0x08, 0x00};
+        unsigned char write_gen[] = {GENERAL_CONFIG, 0xC1, 0xC0};  
         unsigned char write_trigger[] = {TRIGGER, 0x01, 0x10};
         unsigned char rx_buffer[2];
 
@@ -65,7 +65,6 @@ int main()
 		.buf = write_gen,
 		.len = 3
     },
-
         [3] = {
 		.addr = DAC53401_I2C_ADDR,	
 		.flags = 0,	
@@ -85,9 +84,9 @@ int main()
 		.flags = 0,	
 		.buf = write_trigger,
 		.len = 3
-        },
-                 
-		[6] = {
+    },
+
+        [6] = {
 		.addr = DAC53401_I2C_ADDR,	
 		.flags = 0,	
 		.buf = write_mlow,
@@ -100,10 +99,9 @@ int main()
 		.buf = write_mhigh,
 		.len = 3
     }
-                  
-	};
-   
-       
+                          
+    };
+     
 	struct i2c_rdwr_ioctl_data msgset[] = {
 
 		[0]={
@@ -159,23 +157,23 @@ int main()
       	ioctl(fd, I2C_RDWR, &msgset[1]);
 	    sleep(1);
 
-	// Initiate a combined I2C transaction to read from GENERAL_CONFIG
+	// Initiate a combined I2C transaction to read from GENERAL_CONFIG	
        ioctl(fd, I2C_RDWR, &msgset[2]);
 	   sleep(1);
 	// Print the obtained configuration in GENERAL_CONFIG
        printf("Read from GENERAL_CONFIG %02x %02x\n", rx_buffer[0], rx_buffer[1]);
 
 	// Initiate a combined I2C transaction to write to DAC_MARGIN_LOW and _HIGH
-        ioctl(fd, I2C_RDWR, &msgset[4]);
-	    sleep(1);
-	    ioctl(fd, I2C_RDWR, &msgset[5]);
-	    sleep(1);
+       ioctl(fd, I2C_RDWR, &msgset[4]);
+	   sleep(1);
+	   ioctl(fd, I2C_RDWR, &msgset[5]);
+	   sleep(1);
      
 	// Initiate a combined I2C transaction to write to TRIGGER
-        ioctl(fd, I2C_RDWR, &msgset[3]);
-        sleep(1);
+       ioctl(fd, I2C_RDWR, &msgset[3]);
+	   sleep(1);
 
-    while(1) {}
+     while(1) {}
 
     close(fd);
     return 0;
