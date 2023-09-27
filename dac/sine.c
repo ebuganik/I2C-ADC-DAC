@@ -33,10 +33,10 @@
 /* The following arrays have more or less the same structure: first member is the address of the registry, 
    and the other two contain two eight bit values determined from the datasheet itself 
    The values themselves can be described with the following: 
-			- write_gen     - value which enables the configuration of a sine wave with the code step of 1 LSB and no slew rate,
-                                          enables the extern reference from the supplied voltage of 3.3 V and the power up mode
-                        - write_data    - decimal value of read sine sample
-		        - write_trigger - enables writing to non-volatile memory by setting NVM_PROG
+	- write_gen     - value which enables the configuration of a sine wave with the code step of 1 LSB and no slew rate,
+                        enables the extern reference from the supplied voltage of 3.3 V and the power up mode
+        - write_data    - decimal value of read sine sample
+	- write_trigger - enables writing to non-volatile memory by setting NVM_PROG
 */
 
 unsigned short sineSamples[SINE_PERIOD_STEPS] = {0b0000011111111100, 0b0000101001101000, 0b0000110010010100, 0b0000111001010000, 0b0000111101101100, 0b0000111111001100,
@@ -122,27 +122,27 @@ int main()
        
 	struct i2c_rdwr_ioctl_data msgset[] = {
 
-	    [0]={
+	    [0] = {
 			.msgs = &iomsgs[0],    // message set to read Device ID
 			.nmsgs = 2
 		    },
 
-            [1]={
+            [1] = {
 			.msgs = &iomsgs[2],    // message set to write to GENERAL_CONFIG
 			.nmsgs = 1
 		    },
 
-            [2]={
+            [2] = {
 			.msgs = &iomsgs[3],    // message set to read from GENERAL_CONFIG
 			.nmsgs = 2
 		    },
                  
-            [3]={
+            [3] = {
 			.msgs = &iomsgs[5],    // message set to write to TRIGGER
 			.nmsgs = 1
 		    },
 
-            [4]={
+            [4] = {
 	 		.msgs = &iomsgs[6],    // message set to write to DAC_DATA
 			.nmsgs = 1
 		    }
