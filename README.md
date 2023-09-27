@@ -117,16 +117,20 @@ Prva, gdje je vrijednost gornje granice - margine 1.65 V (na polovini opsega nap
 Druga, gdje je vrijednost gornje granice - margine 3.3 V. Slew rate iznosi 25.6 us, a code step 1 LSB. Proračunata frekvencija iznosi približno 20 kHz.
 
  <p align="center">
-<img src = "https://github.com/ebuganik/I2C-ADC-DAC/assets/116280871/b3e9fca8-285f-4218-9197-6ea407279da1" width = "625", height = "350">  
+<img src = "https://github.com/ebuganik/I2C-ADC-DAC/assets/116280871/9ce38954-353f-48b6-a9eb-61b8a33a885e" width = "625", height = "350">  
 
 Daju se primijetiti značajne razlike u prikazu pravougaonog signala na prvoj i drugoj slici, tačnije, uticaj promjenjivog slew rate-a koji je u prvom slučaju rezultovao sporijom promjenom rastuće i opadajuće ivice signala tako da je on poprimio više trapezoidni oblik, nego pravougaoni.
 
 Implementacija korištene I2C transakcije nalazi se u folderu **DAC**, u fajlovima **rectangle_lower_amp.c** i **rectangle_higher_amp.c**.
 
-### Generisanje testerastor signala
-Pored generisanja pravougaonog i trougaonog signala, DAC 10 Click modul ima mogućnost generisanja i testerastog signala. Za potrebe testiranja, generisali smo testerasti signal čija amplituda dostiže 3.3 V, frekvencije 30 Hz.
+### Generisanje testerastog signala
+Pored generisanja pravougaonog i trougaonog signala, DAC 10 Click modul ima mogućnost generisanja i testerastog signala. Za potrebe testiranja, generisali smo testerasti signal čija amplituda dostiže 3.3 V, frekvencije 30 Hz. 
+Frekvencija pravougaonog signala određuje se sljedećim izrazom:
 
-Ubaciti sliku!
+<p align="left">
+<img src = "https://github.com/ebuganik/I2C-ADC-DAC/assets/116280871/e76c6e75-0f50-4e42-917d-aa8a2be45b17" width= "450",  height = "80"> 
+
+-- > Ubaciti sliku!
 
 ### Generisanje sinusnog signala
 
@@ -136,10 +140,10 @@ Potrebno je smjestiti odmjerke sinusnog signala u DAC_DATA registar i na izlazu 
 
 Iz pomenutih razloga, za generisanje odmjeraka sinusnog signala korištena je python skripta ``` sineGenerator.py ```, u kojoj su uključeni faktori poput frekvencije samog signala, ali i frekvencije odmjeravanja, broj tačaka (samples) u kojem želimo naš sinusni signal, kao i njegova amplituda i DC ofset, kako signal treba da se nađe u opsegu od 0 do 3.3 V. Pokretanjem skripte u terminalu se ispisuju 10-bitne decimalne vrijednosti odmjeraka, na koje se potom dodaju *don't care* biti i tako formiraju dvobajtni podaci, koji se zatim upisuju u sine_wave_samples.txt fajl, tačnije lookup tabelu koja se potom koristi u kodu za transakciju.
 
-Primjer generisanja sinusnog signala od približno 50 Hz, sa frekvencijom odmjeravanja 1kHz i brojem odmjeraka 120 prikazan je na sljedećoj slici:
+Primjer generisanja sinusnog signala od približno 50 Hz, sa frekvencijom odmjeravanja 1 kHz i brojem odmjeraka 120 prikazan je na sljedećoj slici:
 
  <p align="center">
-<img src = "https://github.com/ebuganik/I2C-ADC-DAC/assets/116280871/baf9dfea-72e5-4315-bfd0-4602b8916a08" width = "600", height = "400">   
+<img src = "https://github.com/ebuganik/I2C-ADC-DAC/assets/116280871/85fc7de2-a74f-4558-9e3b-412230800d80" width = "700", height = "400">   
 
 Python skripta za generisanje odmjeraka sinusnog signala nalazi se u fajlu **Python/sineGenerator.py**, dok je implementacija korištene I2C transakcije smještena u fajlu **DAC/sine.c**.
 
@@ -148,7 +152,7 @@ U slučaju da se adrese ova dva slave uređaja razlikuju, što je moguće posti�
 U tom smislu potrebno je inicirati kombinovanu I2C transkciju koja će prvo konfigurisati A/D konvertor i čitati podatke koje šalje, zatim transakciju koja će nam potvrditi da komuniciramo sa odgovarajućim uređajem čitanjem Device ID-a iz statusnog registra D/A konvertora. Pored toga potrebno je konfigurisati D/A konvertor upisivanjem odgovarajućih podataka u GENERAL_CONFIG i TRIGGER registre kao u prethodnim poglavljima, te dodatna transakcija koja će nam omogućiti upisivanje podataka dobijenih od A/D konvertora u DAC_DATA registar D/A konvertora.
 Podaci koje ćemo dobiti od A/D konvertora potrebno je prilagoditi arhitekturi D/A konvertora, jer se radi o uređajima sa različitim rezolucijama. Pored toga, ovi uređaji imaju i različite referentne napone te je zbog toga neophodno izvršiti manipulaciju sirovih podataka sa A/D konvertora.
 Sirove, 12-bitne podatke A/D konvertora ćemo prilagoditi D/A konvertoru tako što ih prvo podijelimo sa 4 (4096/1024 = 4), zatim ćemo ih pomnožiti sa referentnim naponom A/D konvertora (2.5 V) i podijeliti sa referentnim naponom D/A konvertora (3.3 V). Na ovaj način smo pronašli digitalni ekvivalent datog odmjerka signala. Na kraju, tako dobijene podatke potrebno je pomjeriti za dva bita ulijevo, kako bismo dobili odgovarajuće 12-bitno poravnanje koje D/A konvertor zahtijeva. Detaljnija implementacija ovog postupka dostupna je u fajlu **adc-dac.c**.
-Prilikom rekonstruisanja signala koji dovodimo na ulaz A/D konvertora, u I2C transakcijama Raspberry Pi predstavlja master, dok ADC 12 Click i DAC 10 Click moduli predstavljaju slave uređaje. Radi ispravnog testiranja, moduli moraju biti dodadno povezani na odgovarajući način, odnosno moraju imati zajednička napajanja od 3.3 V, SCL i SDA linije i naravno masu. Na ulaz ADC 12 Click modula bi se dovodio signal sa signal generatora, dok bi se na izlaz DAC 10 Click modula povezale sonde osciloskopa za posmaranje rekonstruisanog signala.
+Prilikom rekonstruisanja signala koji dovodimo na ulaz A/D konvertora, u I2C transakcijama Raspberry Pi predstavlja master, dok ADC 12 Click i DAC 10 Click moduli predstavljaju slave uređaje. Radi ispravnog testiranja, moduli moraju biti dodadno povezani na odgovarajući način, odnosno moraju imati zajednička napajanja od 3.3 V, SCL i SDA linije i naravno masu. Na ulaz ADC 12 Click modula bi se dovodio signal sa signal generatora, dok bi se na izlaz DAC 10 Click modula povezale sonde osciloskopa za posmatranje rekonstruisanog signala.
 Način povezivanja prikazan je na sljedećoj slici:
 
 <p align="center">
