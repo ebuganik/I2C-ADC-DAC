@@ -27,7 +27,10 @@ Prije testiranja razvijenog programa potrebno je povezati ADC 12 Click modul sa 
 | GPIO 3 (I2C1 SCL) | SCL | 
 | Ground | GND |
 
+<p align="center">
+<img src = "https://github.com/ebuganik/I2C-ADC-DAC/assets/116347913/f4c24cf5-18b6-42e6-a711-d35b06027973" width = "600", height = "700">
 
+ 
 Prvi vid testiranja ovog A/D konvertora je sproveden dovođenjem napona sa potenciometra na njegov ulaz (CH0). Rezultati testiranja prikazani su na slikama ispod, prilikom čega je upoređena vrijednost napona izmjerenog multimetrom sa vrijednostima dobijenih od A/D konvertora. Interpretacija sirovih podataka je izvršena korištenjem sljedeće formule:
 
 **$V_{out} = \frac{ADC{data} * V_{ref}}{2^N}$**
@@ -48,7 +51,7 @@ gdje $V_{ref}$ predstavlja referentni napon od 2.51 V, a $2^N$ kod 12-bitnog ure
 
 Sirove podatke sa A/D konvertora potrebno je interpretirati kao stvarne, digitalne vrijednosti, koje su određene internom referencom i rezolucijom ovog uređaja. Kako je interna naponska referenca manja od napona napajanja, maksimalni napon koji je moguće prikazati biće 2.51 V. Sve vrijednosti napona na ulazu koje su veće ili jednake od interne reference, biće prikazane kao vrijednost od 2.51 V.
 
- <p align="center"> 
+<p align="center"> 
 <img src = "https://github.com/ebuganik/I2C-ADC-DAC/assets/116347913/14289d76-d2cb-413d-b04a-49a9ff1c0773" width = "400", height = "600">
    
 Nakon testiranja pomoću potenciometra, na ulaz A/D konvertora doveden je i sinusni signal amplitude 1.65 V, ofseta 1.65V i frekvencije 1 kHz. Rezultat testiranja prikazan je na slici ispod:
@@ -59,7 +62,11 @@ Nakon testiranja pomoću potenciometra, na ulaz A/D konvertora doveden je i sinu
 ## Rad sa DAC 10 Click modulom
 ### Konfiguracija DAC53401 uređaja
 
-DAC 10 Click za svoju osnovu koristi DAC53401, 10-bitni digitalno-analogni konvertor Texas Instruments. S obzirom na to da posjeduje mogućnost rada sa I2C interfejsom, ponajprije je potrebno odrediti adresu ovog slave uređaja kako bi se mogao ispravno konfigurisati. DAC53401 raspolaže sa general i broadcast adresom, u slučaju da se koristi više DAC53401 u komunikaciji. U ovom slučaju potrebna nam je samo general adresa, koja je kao i kod A/D konvertora sedmobitna i određena je preset bitima (fabrički, unaprijed definisanim) 1001 koji predstavljaju više bite te sa tri niža koja zavise od položaja pina A0. Kako je položaj pina A0 na DAC10 Click prema AGND, preostala tri bita su određena sa 000, pa tako adresni bajt iznosi **0x48**.
+DAC 10 Click za svoju osnovu koristi DAC53401, 10-bitni digitalno-analogni konvertor Texas Instruments. S obzirom na to da posjeduje mogućnost rada sa I2C interfejsom, ponajprije je potrebno odrediti adresu ovog slave uređaja kako bi se mogao ispravno konfigurisati. DAC53401 raspolaže sa general i broadcast adresom, u slučaju da se koristi više DAC53401 u komunikaciji. U ovom slučaju potrebna nam je samo general adresa, koja je kao i kod A/D konvertora sedmobitna i određena je preset bitima (fabrički, unaprijed definisanim) 1001 koji predstavljaju više bite te sa tri niža koja zavise od položaja pina A0. Kako je položaj pina A0 na DAC10 Click prema AGND, preostala tri bita su određena sa 000, pa tako adresni bajt iznosi **0x48**. Način povezivanja DAC 10 Click modula sa Raspberry Pi platformom i oscloskopom prikazan je na sljedećoj slici:
+
+<p align="center"> 
+<img src = "https://github.com/ebuganik/I2C-ADC-DAC/assets/116347913/628aa667-cad1-4c63-aa08-c56ad5ac80c4" width = "600", height = "700">
+
 
 Konfigurisanje DAC podrazumijeva upisivanje odgovarajućih vrijednosti u nekoliko NVM ili non-volatile registara ovog konvertora. Na primjer, moguće je obezbijediti rad sa internom referencom koja iznosi 1.21 V ili pak eksternom referencom koja zavisi od dovedenog napona napajanja (3 V ili 5.5 V). U radu koji je prikazan u nastavku koristi se napon napajanja od 3.3 V, sa omogućenom eksternom referencom, koja prema tome iznosi 3.3 V i ona se može podesiti upravo korištenjem GENERAL CONFIG registra. U nekim slučajevima potrebno je podesiti i opsege signala koji se prikazuje na izlazu i to upisom u DAC_MARGIN_LOW i _HIGH registre, a ako ipak treba da upisujemo vrijednosti odmjeraka koji će se konvertovani u analogne vrijednosti prikazati na izlazu tada će biti neophodno upisati vrijednosti istih u DAC_DATA registar. Naravno, da bismo omogućili da se sadržaj upiše u pomenute NVM registre, neophodno je setovati NVM_PROG bit u TRIGGER registru. Više detalja o tome kako je u kojem zadatku vršeno konfigurisanje pojašnjeno je u korištenim fajlovima koji se nalaze u folderu ```DAC```.
 
@@ -136,6 +143,12 @@ U slučaju da se adrese ova dva slave uređaja razlikuju, što je moguće posti�
 U tom smislu potrebno je inicirati kombinovanu I2C transkciju koja će prvo konfigurisati A/D konvertor i čitati podatke koje šalje, zatim transakciju koja će nam potvrditi da komuniciramo sa odgovarajućim uređajem čitanjem Device ID-a iz statusnog registra D/A konvertora. Pored toga potrebno je konfigurisati D/A konvertor upisivanjem odgovarajućih podataka u GENERAL_CONFIG i TRIGGER registre kao u prethodnim poglavljima, te dodatna transakcija koja će nam omogućiti upisivanje podataka dobijenih od A/D konvertora u DAC_DATA registar D/A konvertora.
 Podaci koje ćemo dobiti od A/D konvertora potrebno je prilagoditi arhitekturi D/A konvertora, jer se radi o uređajima sa različitim rezolucijama. Pored toga, ovi uređaji imaju i različite referentne napone te je zbog toga neophodno izvršiti manipulaciju sirovih podataka sa A/D konvertora.
 Sirove, 12-bitne podatke A/D konvertora ćemo prilagoditi D/A konvertoru tako što ih prvo podijelimo sa 4 (4096/1024 = 4), zatim ćemo ih pomnožiti sa referentnim naponom A/D konvertora (2.5 V) i podijeliti sa referentnim naponom D/A konvertora (3.3 V). Na ovaj način smo pronašli digitalni ekvivalent datog odmjerka signala. Na kraju, tako dobijene podatke potrebno je pomjeriti za dva bita ulijevo, kako bismo dobili odgovarajuće 12-bitno poravnanje koje D/A konvertor zahtijeva. Detaljnija implementacija ovog postupka dostupna je u fajlu **adc-dac.c**.
+Prilikom rekonstruisanja signala koji dovodimo na ulaz A/D konvertora, u I2C transakcijama Raspberry Pi predstavlja master, dok ADC 12 Click i DAC 10 Click moduli predstavljaju slave uređaje. Radi ispravnog testiranja, moduli moraju biti dodadno povezani na odgovarajući način, odnosno moraju imati zajednička napajanja od 3.3 V, SCL i SDA linije i naravno masu. Na ulaz ADC 12 Click modula bi se dovodio signal sa signal generatora, dok bi se na izlaz DAC 10 Click modula povezale sonde osciloskopa za posmaranje rekonstruisanog signala.
+Način povezivanja prikazan je na sljedećoj slici:
+
+<p align="center">
+<img src = "https://github.com/ebuganik/I2C-ADC-DAC/assets/116347913/dd705bfe-a133-4960-8fca-87c4dd1cf064" width = "600", height = "700">
+
 
 
 
