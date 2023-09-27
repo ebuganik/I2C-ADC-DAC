@@ -123,6 +123,11 @@ Daju se primijetiti značajne razlike u prikazu pravougaonog signala na prvoj i 
 
 Implementacija korištene I2C transakcije nalazi se u folderu **DAC**, u fajlovima **rectangle_lower_amp.c** i **rectangle_higher_amp.c**.
 
+### Generisanje testerastor signala
+Pored generisanja pravougaonog i trougaonog signala, DAC 10 Click modul ima mogućnost generisanja i testerastog signala. Za potrebe testiranja, generisali smo testerasti signal čija amplituda dostiže 3.3 V, frekvencije 30 Hz.
+
+Ubaciti sliku!
+
 ### Generisanje sinusnog signala
 
 Za razliku od korištenja CWG-a u generisanju pomenutih talasnih oblika na izlazu DAC, kako bismo izgenerisali sinusni talasni oblik bilo je neophodno primijeniti neki drugi pristup. 
