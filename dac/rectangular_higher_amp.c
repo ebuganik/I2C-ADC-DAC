@@ -28,7 +28,7 @@
             - write_mlow    - value which determines the lower bound of output signal  (0 V)
 			- write_mhigh   - value which determines the higher bound of output signal (3.3 V)
 			- write_gen     - value which enables the configuration of a rectangular wave with the code step of 1 LSB and slew rate of 25.6 us,
-			                 enables the extern reference from the supplied voltage of 3.3 V and the power up mode
+                              enables the extern reference from the supplied voltage of 3.3 V and the power up mode
 		    - write_trigger - enables CWG mode (mode where the DAC itself generates the wave on its output) by setting the START_FUNC_GEN bit,
 			                 as well as writing to non-volatile memory by setting NVM_PROG
 */
