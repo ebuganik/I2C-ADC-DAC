@@ -1,15 +1,9 @@
 #include <fcntl.h>
-
 #include <unistd.h>
-
 #include <sys/ioctl.h>
-
 #include <linux/i2c-dev.h>
-
 #include <linux/i2c.h>
-
 #include <stdio.h>
-
 #include <math.h>
 
 // I2C address of DAC53401
