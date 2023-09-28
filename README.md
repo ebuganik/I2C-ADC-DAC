@@ -138,7 +138,7 @@ Frekvencija pravougaonog signala određuje se sljedećim izrazom:
 <img src = "https://github.com/ebuganik/I2C-ADC-DAC/assets/116280871/e76c6e75-0f50-4e42-917d-aa8a2be45b17" width= "450",  height = "80"> 
  
  <p align="center">
-<img src = "https://github.com/ebuganik/I2C-ADC-DAC/assets/116280871/9ce38954-353f-48b6-a9eb-61b8a33a885e" width = "625", height = "350">  
+<img src = "https://github.com/ebuganik/I2C-ADC-DAC/assets/116280871/aa78eab7-17f8-4f59-882f-5bd466c32b1e)" width = "625", height = "350">  
 
 ### Generisanje sinusnog signala
 
@@ -151,7 +151,7 @@ Iz pomenutih razloga, za generisanje odmjeraka sinusnog signala korištena je py
 Primjer generisanja sinusnog signala od približno 50 Hz, sa frekvencijom odmjeravanja 1 kHz i brojem odmjeraka 120 prikazan je na sljedećoj slici:
 
  <p align="center">
-<img src = "https://github.com/ebuganik/I2C-ADC-DAC/assets/116280871/85fc7de2-a74f-4558-9e3b-412230800d80" width = "700", height = "400">   
+<img src = "https://github.com/ebuganik/I2C-ADC-DAC/assets/116280871/85fc7de2-a74f-4558-9e3b-412230800d80" width = "700", height = "350">   
 
 Python skripta za generisanje odmjeraka sinusnog signala nalazi se u fajlu **Python/sineGenerator.py**, dok je implementacija korištene I2C transakcije smještena u fajlu **DAC/sine.c**.
 
