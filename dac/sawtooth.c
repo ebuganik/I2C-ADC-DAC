@@ -7,13 +7,17 @@
 
 // I2C address of DAC53401
 #define DAC53401_I2C_ADDR	0x48
+
 // Status register of DAC53401 to read DEVID
 #define STATUS                  0xD0
+
 // Margin high and low registers, necessary to use CWG mode
 #define DAC_MARGIN_HIGH         0x25 
 #define DAC_MARGIN_LOW          0x26
+
 // General config register of DAC53401
 #define GENERAL_CONFIG          0xD1
+
 // Trigger register of DAC53401
 #define TRIGGER                 0xD3 
 
@@ -27,7 +31,7 @@ int main()
         unsigned char write_mhigh[] = {DAC_MARGIN_HIGH, 0x0F, 0xFC};
         unsigned char write_gen[] = {GENERAL_CONFIG, 0x40, 0x00};  
         unsigned char write_trigger[] = {TRIGGER, 0x01, 0x10};
-        unsigned char rx_buffer[3] = {};
+        unsigned char rx_buffer[2];
 
         struct i2c_msg iomsgs[] = {
 		
@@ -89,32 +93,32 @@ int main()
        
 	struct i2c_rdwr_ioctl_data msgset[] = {
 
-		[0]={
+		[0] = {
 			.msgs = &iomsgs[0],    // message set to get STATUS data
 			.nmsgs = 2
 		    },
 
-                [1]={
+                [1] = {
 			.msgs = &iomsgs[2],    // message set to write to GENERAL_CONFIG
 			.nmsgs = 1
 		    },
 
-                [2]={
+                [2] = {
 			.msgs = &iomsgs[3],    // message set to read GENERAL_CONFIG
 			.nmsgs = 2
 		    },
                  
-                [3]={
+                [3] = {
 			.msgs = &iomsgs[5],    // message set to write to TRIGGER
 			.nmsgs = 1
 		    },
 
-                [4]={
+                [4] = {
 			.msgs = &iomsgs[6],    // message set to write to MARGIN_LOW
 			.nmsgs = 1
 		    },
 
-		[5]={
+		[5] = {
 			.msgs = &iomsgs[7],    // message set to write to MARGIN_HIGH
 			.nmsgs = 1
 		    }
@@ -132,31 +136,29 @@ int main()
 		return -1;
 	}
 	
-	// read from status register
-    ioctl(fd, I2C_RDWR, &msgset[0]);
-    printf("Device ID is %02x %02x\n", rx_buffer[0], rx_buffer[1]);
+	// Initiate a combined I2C transaction to obtain Device ID and print it
+        ioctl(fd, I2C_RDWR, &msgset[0]);
+        printf("Device ID is %02x %02x\n", rx_buffer[0], rx_buffer[1]);
 	sleep(1);
 	
-	//write to gen conf
-    ioctl(fd, I2C_RDWR, &msgset[1]);
+	//Initiate a combined I2C transaction to write to GENERAL_CONFIG 
+        ioctl(fd, I2C_RDWR, &msgset[1]);
 	sleep(1);
 
-	// read from GENERAL	
-    ioctl(fd, I2C_RDWR, &msgset[2]);
+	// Initiate a combined I2C transaction to read from GENERAL_CONFIG	
+        ioctl(fd, I2C_RDWR, &msgset[2]);
 	sleep(1);
-    printf("Read from GENERAL_CONFIG %02x %02x\n", rx_buffer[0], rx_buffer[1]);
+        printf("Read from GENERAL_CONFIG %02x %02x\n", rx_buffer[0], rx_buffer[1]);
 
-	// write to margin high and low
-    ioctl(fd, I2C_RDWR, &msgset[4]);
+	// Initiate a combined I2C transaction to write to DAC_MARGIN_LOW and _HIGH
+        ioctl(fd, I2C_RDWR, &msgset[4]);
 	sleep(1);
 	ioctl(fd, I2C_RDWR, &msgset[5]);
 	sleep(1);
      
-	//trigger
-    ioctl(fd, I2C_RDWR, &msgset[3]);
-
-
-	sleep(1);
+	//Initiate a combined I2C transaction to write to TRIGGER
+       ioctl(fd, I2C_RDWR, &msgset[3]);
+       sleep(1);
 
     while(1) {}
 
