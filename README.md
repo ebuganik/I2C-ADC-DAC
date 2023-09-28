@@ -62,7 +62,7 @@ Nakon testiranja pomoću potenciometra, na ulaz A/D konvertora doveden je i sinu
 ## Rad sa DAC 10 Click modulom
 ### Konfiguracija DAC53401 uređaja
 
-DAC 10 Click za svoju osnovu koristi DAC53401, 10-bitni digitalno-analogni konvertor Texas Instruments. S obzirom na to da posjeduje mogućnost rada sa I2C interfejsom, ponajprije je potrebno odrediti adresu ovog slave uređaja kako bi se mogao ispravno konfigurisati. DAC53401 raspolaže sa general i broadcast adresom, u slučaju da se koristi više DAC53401 u komunikaciji. U ovom slučaju potrebna nam je samo general adresa, koja je kao i kod A/D konvertora sedmobitna i određena je preset bitima (fabrički, unaprijed definisanim) 1001 koji predstavljaju više bite te sa tri niža koja zavise od položaja pina A0. Kako je položaj pina A0 na DAC 10 Click prema AGND, preostala tri bita su određena sa 000, pa tako adresni bajt iznosi **0x48**. Način povezivanja DAC 10 Click modula sa Raspberry Pi platformom i osciloskopom prikazan je na sljedećoj slici:
+DAC 10 Click za svoju osnovu koristi DAC53401, 10-bitni digitalno/analogni konvertor Texas Instruments. S obzirom na to da posjeduje mogućnost rada sa I2C interfejsom, ponajprije je potrebno odrediti adresu ovog slave uređaja kako bi se mogao ispravno konfigurisati. DAC53401 raspolaže sa general i broadcast adresom, u slučaju da se koristi više DAC53401 u komunikaciji. U ovom slučaju potrebna nam je samo general adresa, koja je kao i kod A/D konvertora sedmobitna i određena je preset bitima (fabrički, unaprijed definisanim) 1001 koji predstavljaju više bite te sa tri niža koja zavise od položaja pina A0. Kako je položaj pina A0 na DAC 10 Click prema AGND, preostala tri bita su određena sa 000, pa tako adresni bajt iznosi **0x48**. Način povezivanja DAC 10 Click modula sa Raspberry Pi platformom i osciloskopom prikazan je na sljedećoj slici:
 
 <p align="center"> 
 <img src = "https://github.com/ebuganik/I2C-ADC-DAC/assets/116347913/628aa667-cad1-4c63-aa08-c56ad5ac80c4" width = "600", height = "700">
@@ -70,11 +70,12 @@ DAC 10 Click za svoju osnovu koristi DAC53401, 10-bitni digitalno-analogni konve
 
 Konfigurisanje DAC podrazumijeva upisivanje odgovarajućih vrijednosti u nekoliko NVM ili non-volatile registara ovog konvertora. Na primjer, moguće je obezbijediti rad sa internom referencom koja iznosi 1.21 V ili pak eksternom referencom koja zavisi od dovedenog napona napajanja (3 V ili 5.5 V). U radu koji je prikazan u nastavku koristi se napon napajanja od 3.3 V, sa omogućenom eksternom referencom, koja prema tome iznosi 3.3 V i ona se može podesiti upravo korištenjem GENERAL_CONFIG registra. U nekim slučajevima potrebno je podesiti i opsege signala koji se prikazuje na izlazu i to upisom u DAC_MARGIN_LOW i _HIGH registre, a ako ipak treba da upisujemo vrijednosti odmjeraka koji će se konvertovani u analogne vrijednosti prikazati na izlazu tada će biti neophodno upisati vrijednosti istih u DAC_DATA registar. Naravno, da bismo omogućili da se sadržaj upiše u pomenute NVM registre, neophodno je setovati NVM_PROG bit u TRIGGER registru. Više detalja o tome kako je u kojem zadatku vršeno konfigurisanje pojašnjeno je u korištenim fajlovima koji se nalaze u folderu ```DAC```.
 
-Potrebno je pomenuti i kako je moguće pročitati i device ID, koji se nalazi u STATUS registru. S obzirom na to da je u pitanju DAC53401-Q1, kako je navedeno i u [datasheet](https://download.mikroe.com/documents/datasheets/DAC53401_datasheet.pdf)-u ovog D/A konvertora, ID iznosi **0x0C**. Minimalna povezivanja DAC sa master uređajem koji je u ovom slučaju Raspberry Pi mogu se ostvariti kao i u prethodno opisanom radu sa ADC 12 Click modulom, u tabeli u poglavlju ```Testiranje ADC 12 Click modula```.
-Pored čitanja Device ID-a, obezbijeđena je i dodatna transakcija za čitanje vrijednosti koja je upisana u GENERAL_CONFIG registar, kako bi se potvrdila ispravna konfiguracija.
+Potrebno je pomenuti i kako je moguće pročitati i device ID, koji se nalazi u STATUS registru. S obzirom na to da je u pitanju DAC53401-Q1, kako je navedeno i u [datasheet](https://download.mikroe.com/documents/datasheets/DAC53401_datasheet.pdf)-u ovog D/A konvertora, ID iznosi **0x0C**. Pored čitanja Device ID-a, obezbijeđena je i dodatna transakcija za čitanje vrijednosti koja je upisana u GENERAL_CONFIG registar, kako bi se potvrdila ispravna konfiguracija.
 
 <p align="center"> 
-<img src = "https://github.com/ebuganik/I2C-ADC-DAC/assets/116347913/6357462a-e78b-40d1-8a99-403f864e6e27" width = "500", height = "70">
+<img src = "https://github.com/ebuganik/I2C-ADC-DAC/assets/116347913/6357462a-e78b-40d1-8a99-403f864e6e27" width = "550", height = "70">
+
+Minimalna povezivanja DAC sa master uređajem koji je u ovom slučaju Raspberry Pi mogu se ostvariti kao i u prethodno opisanom radu sa ADC 12 Click modulom, u tabeli u poglavlju ```Testiranje ADC 12 Click modula```.
 
 ## Generisanje talasnih oblika na izlazu DAC konvertora
 
@@ -86,7 +87,7 @@ Registri koji su konfigurisani za generisanje talasnih oblika u narednim primjer
 
 **${DAC{data}} = \frac{V_{out} * 2^N}{V_{ref}}$**
 
-Pri čemu $V_{out}$ predstavlja izlaznu, analognu vrijednost DAC, $2^N$ kod 10-bitnog uređaja predstavlja vrijednost od 1024, a $V_{ref}$ predstavlja referentni napon od 3.3 V. ${DAC{data}} predstavlja 10-bitnu vrijednost na koju je potrebno dodati don't care bite na MS i LS bajt kako bi se u registru našla dvobajta, ispravna vrijednost.  
+Pri čemu $V_{out}$ predstavlja izlaznu, analognu vrijednost DAC, $2^N$ kod 10-bitnog uređaja predstavlja vrijednost od 1024, a $V_{ref}$ predstavlja referentni napon od 3.3 V. ${DAC{data}}$ predstavlja 10-bitnu vrijednost na koju je potrebno dodati *don't care* bite na MS i LS bajt kako bi se u registru našla dvobajta, ispravna vrijednost.  
 
 Talasni oblici prikazani u nastavku izgenerisani su python skriptama koje se nalaze u folderu **Python**, a za prikaz podataka .csv fajlova izgenerisanih na osciloskopu.
 
@@ -131,8 +132,8 @@ Daju se primijetiti značajne razlike u prikazu pravougaonog signala na prvoj i 
 Implementacija korištene I2C transakcije nalazi se u folderu **DAC**, u fajlovima **rectangle_lower_amp.c** i **rectangle_higher_amp.c**.
 
 ### Generisanje testerastog signala
-Pored generisanja pravougaonog i trougaonog signala, DAC 10 Click modul ima mogućnost generisanja i testerastog signala. Za potrebe testiranja, generisali smo testerasti signal čija amplituda dostiže 3.3 V, frekvencije 30 Hz. 
-Frekvencija pravougaonog signala određuje se sljedećim izrazom:
+Pored generisanja pravougaonog i trougaonog signala, DAC 10 Click modul ima mogućnost generisanja i testerastog signala. Za potrebe testiranja, generisan je testerasti signal čija amplituda dostiže 3.3 V, frekvencije 30 Hz. 
+Frekvencija testerastog signala određuje se sljedećim izrazom:
 
 <p align="left">
 <img src = "https://github.com/ebuganik/I2C-ADC-DAC/assets/116280871/e76c6e75-0f50-4e42-917d-aa8a2be45b17" width= "450",  height = "80"> 
@@ -146,7 +147,7 @@ Za razliku od korištenja CWG-a u generisanju pomenutih talasnih oblika na izlaz
 
 Potrebno je smjestiti odmjerke sinusnog signala u DAC_DATA registar i na izlazu omogućiti signal koji će da bude periodičan. Pritom je potrebno uzeti u obzir kako od dvobajtnog sadržaja NVM registra DAC_DATA svega 10 bita prikazuje decimalnu vrijednost svakog upisanog odmjerka, dok se preostali biti tretiraju kao *don't care*. Od značaja bi bilo formirati lookup tabelu iz koje će se odmjerci čitati i uz određeno kašnjenje prikazivati na izlazu DAC.
 
-Iz pomenutih razloga, za generisanje odmjeraka sinusnog signala korištena je python skripta ``` sineGenerator.py ```, u kojoj su uključeni faktori poput frekvencije samog signala, ali i frekvencije odmjeravanja, broj tačaka (samples) u kojem želimo naš sinusni signal, kao i njegova amplituda i DC ofset, kako signal treba da se nađe u opsegu od 0 do 3.3 V. Pokretanjem skripte u terminalu se ispisuju 10-bitne decimalne vrijednosti odmjeraka, na koje se potom dodaju *don't care* biti i tako formiraju dvobajtni podaci, koji se zatim upisuju u sine_wave_samples.txt fajl, tačnije lookup tabelu koja se potom koristi u kodu za transakciju.
+Iz pomenutih razloga, za generisanje odmjeraka sinusnog signala korištena je python skripta ``` sineGenerator.py ```, u kojoj su uključeni faktori poput frekvencije samog signala, ali i frekvencije odmjeravanja, broj tačaka (samples) u kojem želimo naš sinusni signal, kao i njegova amplituda i DC ofset, kako signal treba da se nađe u opsegu od 0 do 3.3 V. Pokretanjem skripte u terminalu se ispisuju 10-bitne decimalne vrijednosti odmjeraka, na koje se potom dodaju *don't care* biti i tako formiraju dvobajtni podaci, koji se zatim upisuju u *sine_wave_samples.txt* fajl, tačnije lookup tabelu koja se potom koristi u kodu za transakciju.
 
 Primjer generisanja sinusnog signala od približno 50 Hz, sa frekvencijom odmjeravanja 1 kHz i brojem odmjeraka 120 prikazan je na sljedećoj slici:
 
