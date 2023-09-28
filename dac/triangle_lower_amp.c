@@ -158,9 +158,9 @@ int main()
 	sleep(1);
 
 	// Initiate a combined I2C transaction to read from GENERAL_CONFIG	
-       ioctl(fd, I2C_RDWR, &msgset[2]);
-       sleep(1);
-       printf("Read from GENERAL_CONFIG %02x %02x\n", rx_buffer[0], rx_buffer[1]);
+        ioctl(fd, I2C_RDWR, &msgset[2]);
+        sleep(1);
+        printf("Read from GENERAL_CONFIG %02x %02x\n", rx_buffer[0], rx_buffer[1]);
 
 	// Initiate a combined I2C transaction to write to DAC_MARGIN_LOW and _HIGH
         ioctl(fd, I2C_RDWR, &msgset[4]);
