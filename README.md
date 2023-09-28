@@ -62,13 +62,13 @@ Nakon testiranja pomoću potenciometra, na ulaz A/D konvertora doveden je i sinu
 ## Rad sa DAC 10 Click modulom
 ### Konfiguracija DAC53401 uređaja
 
-DAC 10 Click za svoju osnovu koristi DAC53401, 10-bitni digitalno-analogni konvertor Texas Instruments. S obzirom na to da posjeduje mogućnost rada sa I2C interfejsom, ponajprije je potrebno odrediti adresu ovog slave uređaja kako bi se mogao ispravno konfigurisati. DAC53401 raspolaže sa general i broadcast adresom, u slučaju da se koristi više DAC53401 u komunikaciji. U ovom slučaju potrebna nam je samo general adresa, koja je kao i kod A/D konvertora sedmobitna i određena je preset bitima (fabrički, unaprijed definisanim) 1001 koji predstavljaju više bite te sa tri niža koja zavise od položaja pina A0. Kako je položaj pina A0 na DAC10 Click prema AGND, preostala tri bita su određena sa 000, pa tako adresni bajt iznosi **0x48**. Način povezivanja DAC 10 Click modula sa Raspberry Pi platformom i osciloskopom prikazan je na sljedećoj slici:
+DAC 10 Click za svoju osnovu koristi DAC53401, 10-bitni digitalno-analogni konvertor Texas Instruments. S obzirom na to da posjeduje mogućnost rada sa I2C interfejsom, ponajprije je potrebno odrediti adresu ovog slave uređaja kako bi se mogao ispravno konfigurisati. DAC53401 raspolaže sa general i broadcast adresom, u slučaju da se koristi više DAC53401 u komunikaciji. U ovom slučaju potrebna nam je samo general adresa, koja je kao i kod A/D konvertora sedmobitna i određena je preset bitima (fabrički, unaprijed definisanim) 1001 koji predstavljaju više bite te sa tri niža koja zavise od položaja pina A0. Kako je položaj pina A0 na DAC 10 Click prema AGND, preostala tri bita su određena sa 000, pa tako adresni bajt iznosi **0x48**. Način povezivanja DAC 10 Click modula sa Raspberry Pi platformom i osciloskopom prikazan je na sljedećoj slici:
 
 <p align="center"> 
 <img src = "https://github.com/ebuganik/I2C-ADC-DAC/assets/116347913/628aa667-cad1-4c63-aa08-c56ad5ac80c4" width = "600", height = "700">
 
 
-Konfigurisanje DAC podrazumijeva upisivanje odgovarajućih vrijednosti u nekoliko NVM ili non-volatile registara ovog konvertora. Na primjer, moguće je obezbijediti rad sa internom referencom koja iznosi 1.21 V ili pak eksternom referencom koja zavisi od dovedenog napona napajanja (3 V ili 5.5 V). U radu koji je prikazan u nastavku koristi se napon napajanja od 3.3 V, sa omogućenom eksternom referencom, koja prema tome iznosi 3.3 V i ona se može podesiti upravo korištenjem GENERAL CONFIG registra. U nekim slučajevima potrebno je podesiti i opsege signala koji se prikazuje na izlazu i to upisom u DAC_MARGIN_LOW i _HIGH registre, a ako ipak treba da upisujemo vrijednosti odmjeraka koji će se konvertovani u analogne vrijednosti prikazati na izlazu tada će biti neophodno upisati vrijednosti istih u DAC_DATA registar. Naravno, da bismo omogućili da se sadržaj upiše u pomenute NVM registre, neophodno je setovati NVM_PROG bit u TRIGGER registru. Više detalja o tome kako je u kojem zadatku vršeno konfigurisanje pojašnjeno je u korištenim fajlovima koji se nalaze u folderu ```DAC```.
+Konfigurisanje DAC podrazumijeva upisivanje odgovarajućih vrijednosti u nekoliko NVM ili non-volatile registara ovog konvertora. Na primjer, moguće je obezbijediti rad sa internom referencom koja iznosi 1.21 V ili pak eksternom referencom koja zavisi od dovedenog napona napajanja (3 V ili 5.5 V). U radu koji je prikazan u nastavku koristi se napon napajanja od 3.3 V, sa omogućenom eksternom referencom, koja prema tome iznosi 3.3 V i ona se može podesiti upravo korištenjem GENERAL_CONFIG registra. U nekim slučajevima potrebno je podesiti i opsege signala koji se prikazuje na izlazu i to upisom u DAC_MARGIN_LOW i _HIGH registre, a ako ipak treba da upisujemo vrijednosti odmjeraka koji će se konvertovani u analogne vrijednosti prikazati na izlazu tada će biti neophodno upisati vrijednosti istih u DAC_DATA registar. Naravno, da bismo omogućili da se sadržaj upiše u pomenute NVM registre, neophodno je setovati NVM_PROG bit u TRIGGER registru. Više detalja o tome kako je u kojem zadatku vršeno konfigurisanje pojašnjeno je u korištenim fajlovima koji se nalaze u folderu ```DAC```.
 
 Potrebno je pomenuti i kako je moguće pročitati i device ID, koji se nalazi u STATUS registru. S obzirom na to da je u pitanju DAC53401-Q1, kako je navedeno i u [datasheet](https://download.mikroe.com/documents/datasheets/DAC53401_datasheet.pdf)-u ovog D/A konvertora, ID iznosi **0x0C**. Minimalna povezivanja DAC sa master uređajem koji je u ovom slučaju Raspberry Pi mogu se ostvariti kao i u prethodno opisanom radu sa ADC 12 Click modulom, u tabeli u poglavlju ```Testiranje ADC 12 Click modula```.
 Pored čitanja Device ID-a, obezbijeđena je i dodatna transakcija za čitanje vrijednosti koja je upisana u GENERAL_CONFIG registar, kako bi se potvrdila ispravna konfiguracija.
@@ -82,6 +82,12 @@ Za prikaz nekih od talasnih oblika na izlazu DAC moguće je iskoristiti Continuo
 
 Pri generisanju traženih talasnih oblika bilo je neophodno uzeti u obzir opseg napona koji će se pojaviti na izlazu. Dokumentacija DAC 10 Click nalaže da je izlazni opseg napona od 0 V do 5.5 V. S obzirom na to da koristimo napon napajanja od 3.3 V te da smo njega izabrali da nam bude eksterna referenca, na izlazu DAC možemo očekivati signal do 3.3 V.
 
+Registri koji su konfigurisani za generisanje talasnih oblika u narednim primjerima većinom su podešavani prateći instrukcije u datasheet-u ovog DAC uređaja. U slučaju registara DAC_MARGIN_HIGH i _LOW, te DAC_DATA bilo je neophodno odrediti decimalnu vrijednost podatka koji će biti upisan i to je vršeno na osnovu formule:
+
+**${DAC{data}} = \frac{V_{out} * 2^N}{V_{ref}}$**
+
+Pri čemu $V_{out}$ predstavlja izlaznu, analognu vrijednost DAC, $2^N$ kod 10-bitnog uređaja predstavlja vrijednost od 1024, a $V_{ref}$ predstavlja referentni napon od 3.3 V.
+
 Talasni oblici prikazani u nastavku izgenerisani su python skriptama koje se nalaze u folderu **Python**, a za prikaz podataka .csv fajlova izgenerisanih na osciloskopu.
 
 ### Generisanje trougaonog signala
@@ -92,12 +98,12 @@ Frekvencija trougaonog signala određuje se sljedećim izrazom:
 
 U slučaju generisanja trougaonog signala razmatrana su dva slučaja:
 
-Prva, gdje je vrijednost gornje granice - margine 1.65 V (na polovini opsega napona na izlazu). Slew rate iznosi 25.6 us x 1.50, a code step 1 LSB (odnosno Vref/1024 = 3.22 mV). Proračunata frekvencija iznosi ...
+Prva, gdje je vrijednost gornje granice - margine 1.65 V (na polovini opsega napona na izlazu). Slew rate iznosi 25.6 us x 1.50, a code step 1 LSB (odnosno Vref/1024 = 3.22 mV). Proračunata frekvencija iznosi približno 16 Hz.
 
  <p align="center">
 <img src = "https://github.com/ebuganik/I2C-ADC-DAC/assets/116280871/62cebfc7-e036-4951-ac7f-7398d1009b0a" width = "625", height = "350">                    
 
-Druga, gdje je vrijednost gornje granice - margine 3.3 V. Slew rate iznosi 25.6 us, a code step 1 LSB. Proračunata frekvencija iznosi ...
+Druga, gdje je vrijednost gornje granice - margine 3.3 V. Slew rate iznosi 25.6 us, a code step 1 LSB. Proračunata frekvencija iznosi približno 15 Hz.
  <p align="center">
 <img src = "https://github.com/ebuganik/I2C-ADC-DAC/assets/116280871/6f8e708f-bfb7-4903-83dd-b31e2abb4893" width = "625", height = "350">  
 
@@ -130,8 +136,9 @@ Frekvencija pravougaonog signala određuje se sljedećim izrazom:
 
 <p align="left">
 <img src = "https://github.com/ebuganik/I2C-ADC-DAC/assets/116280871/e76c6e75-0f50-4e42-917d-aa8a2be45b17" width= "450",  height = "80"> 
-
--- > Ubaciti sliku!
+ 
+ <p align="center">
+<img src = "https://github.com/ebuganik/I2C-ADC-DAC/assets/116280871/9ce38954-353f-48b6-a9eb-61b8a33a885e" width = "625", height = "350">  
 
 ### Generisanje sinusnog signala
 
