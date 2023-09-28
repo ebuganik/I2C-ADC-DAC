@@ -172,7 +172,7 @@ int main()
 
 	// Initiate a combined I2C transaction to read from GENERAL_CONFIG
        ioctl(fd, I2C_RDWR, &msgset[2]);
-      sleep(1);
+       sleep(1);
 	// Print the obtained configuration in GENERAL_CONFIG
        printf("Read from GENERAL_CONFIG %02x %02x\n", rx_buffer[0], rx_buffer[1]);
 	
