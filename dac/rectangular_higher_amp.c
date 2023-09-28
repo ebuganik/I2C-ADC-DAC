@@ -138,7 +138,7 @@ int main()
         };
 
 
-    // Try to open I2C device
+       // Try to open I2C device
 	fd = open("/dev/i2c-1", O_RDWR);
 	
 	// Check for any errors
