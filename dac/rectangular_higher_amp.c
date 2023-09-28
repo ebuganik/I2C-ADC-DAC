@@ -152,26 +152,26 @@ int main()
         ioctl(fd, I2C_RDWR, &msgset[0]);
 	// Print the obtained Device ID
         printf("Device ID is %02x %02x\n", rx_buffer[0], rx_buffer[1]);
-    	 sleep(1);
+    	sleep(1);
 	
 	// Initiate a combined I2C transaction to write to GENERAL_CONFIG
       	ioctl(fd, I2C_RDWR, &msgset[1]);
-	 sleep(1);
+	sleep(1);
 
 	// Initiate a combined I2C transaction to read from GENERAL_CONFIG	
-       ioctl(fd, I2C_RDWR, &msgset[2]);
-	   sleep(1);
+        ioctl(fd, I2C_RDWR, &msgset[2]);
+	sleep(1);
 	// Print the obtained configuration in GENERAL_CONFIG
-       printf("Read from GENERAL_CONFIG %02x %02x\n", rx_buffer[0], rx_buffer[1]);
+        printf("Read from GENERAL_CONFIG %02x %02x\n", rx_buffer[0], rx_buffer[1]);
 
 	// Initiate a combined I2C transaction to write to DAC_MARGIN_LOW and _HIGH
-       ioctl(fd, I2C_RDWR, &msgset[4]);
+        ioctl(fd, I2C_RDWR, &msgset[4]);
 	sleep(1);
    	ioctl(fd, I2C_RDWR, &msgset[5]);
    	sleep(1);
      
 	// Initiate a combined I2C transaction to write to TRIGGER
-       ioctl(fd, I2C_RDWR, &msgset[3]);
+        ioctl(fd, I2C_RDWR, &msgset[3]);
 	sleep(1);
 
      while(1) {}
