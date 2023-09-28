@@ -86,7 +86,7 @@ Registri koji su konfigurisani za generisanje talasnih oblika u narednim primjer
 
 **${DAC{data}} = \frac{V_{out} * 2^N}{V_{ref}}$**
 
-Pri čemu $V_{out}$ predstavlja izlaznu, analognu vrijednost DAC, $2^N$ kod 10-bitnog uređaja predstavlja vrijednost od 1024, a $V_{ref}$ predstavlja referentni napon od 3.3 V.
+Pri čemu $V_{out}$ predstavlja izlaznu, analognu vrijednost DAC, $2^N$ kod 10-bitnog uređaja predstavlja vrijednost od 1024, a $V_{ref}$ predstavlja referentni napon od 3.3 V. ${DAC{data}} predstavlja 10-bitnu vrijednost na koju je potrebno dodati don't care bite na MS i LS bajt kako bi se u registru našla dvobajta, ispravna vrijednost.  
 
 Talasni oblici prikazani u nastavku izgenerisani su python skriptama koje se nalaze u folderu **Python**, a za prikaz podataka .csv fajlova izgenerisanih na osciloskopu.
 
